@@ -1,0 +1,5 @@
+{
+  "name": "Smart Resume Builder",
+  "description": "A modern SaaS application for building professional resumes with AI assistance using Gemini.",
+  "requestFramePermissions": []
+}
