@@ -8,7 +8,8 @@ const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
 export const generateResumeSuggestions = async (
   jobTitle: string,
   currentSection: 'summary' | 'experience',
-  context: string = ''
+  context: string = '',
+  options: { targetJob?: string; industry?: string; tone?: string } = {}
 ): Promise<Suggestion[]> => {
   if (!process.env.API_KEY) {
     console.warn("No API Key provided for Gemini");
@@ -20,10 +21,22 @@ export const generateResumeSuggestions = async (
 
   try {
     // Using gemini-2.5-flash for reliability and standard text tasks
-    const prompt = `You are a professional resume writer. 
-    Generate 3 distinct, professional ${currentSection} suggestions for a ${jobTitle}.
+    let prompt = `You are a professional resume writer`;
+    if (options.industry) {
+      prompt += ` with expertise in the ${options.industry} industry`;
+    }
+    prompt += `.\n`;
+
+    if (options.targetJob) {
+      prompt += `The candidate is targeting a position as: ${options.targetJob}.\n`;
+    }
+
+    prompt += `Generate 3 distinct, professional ${currentSection} suggestions for a candidate with experience as a ${jobTitle}.
     Context: ${context}.
-    Keep them concise and impactful. Return JSON.`;
+    
+    ${options.tone ? `Desired Tone: ${options.tone}` : 'Make the suggestions concise, action-oriented, and impactful'}.
+    
+    Return JSON.`;
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',

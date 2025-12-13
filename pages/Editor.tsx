@@ -65,7 +65,8 @@ const Editor: React.FC = () => {
     const suggestions = await generateResumeSuggestions(
       resume.experience[0]?.role || "Professional", 
       section, 
-      context
+      context,
+      { targetJob: resume.title }
     );
     
     setAiSuggestions(suggestions);

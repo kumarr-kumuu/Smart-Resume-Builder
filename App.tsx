@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Login from './pages/Login';
+import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import Templates from './pages/Templates';
 import Editor from './pages/Editor';
@@ -11,7 +12,7 @@ import { User } from './types';
 // --- Auth Context ---
 interface AuthContextType {
   user: User | null;
-  login: (email: string) => void;
+  login: (userData: User) => void;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -24,23 +25,16 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Check local storage for fake persistence
+    // Check local storage for persistence
     const storedUser = localStorage.getItem('smart_resume_user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
   }, []);
 
-  const login = (email: string) => {
-    const fakeUser: User = {
-      id: '1',
-      name: email.split('@')[0],
-      email: email,
-      plan: 'Pro',
-      avatar: `https://ui-avatars.com/api/?name=${email}&background=0D8ABC&color=fff`
-    };
-    setUser(fakeUser);
-    localStorage.setItem('smart_resume_user', JSON.stringify(fakeUser));
+  const login = (userData: User) => {
+    setUser(userData);
+    localStorage.setItem('smart_resume_user', JSON.stringify(userData));
   };
 
   const logout = () => {
@@ -74,6 +68,7 @@ const App: React.FC = () => {
       <HashRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           
           <Route path="/dashboard" element={
