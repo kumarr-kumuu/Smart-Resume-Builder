@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Login from './pages/Login';
@@ -89,7 +90,8 @@ const App: React.FC = () => {
             </ProtectedRoute>
           } />
           
-          <Route path="/profile" element={
+          {/* Support for nested routes in Profile */}
+          <Route path="/profile/*" element={
             <ProtectedRoute>
               <Profile />
             </ProtectedRoute>

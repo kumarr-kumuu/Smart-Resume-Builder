@@ -1,7 +1,9 @@
+
 export interface User {
   id: string;
   name: string;
   email: string;
+  phone?: string;
   avatar?: string;
   plan: 'Free' | 'Pro';
 }
@@ -12,12 +14,15 @@ export interface Resume {
   lastEdited: string;
   thumbnail?: string;
   templateId: string;
+  status: 'draft' | 'final';
   personalInfo: {
     fullName: string;
     email: string;
     phone: string;
     location: string;
     summary: string;
+    website?: string;
+    linkedin?: string;
   };
   experience: ExperienceItem[];
   education: EducationItem[];
@@ -38,6 +43,7 @@ export interface EducationItem {
   school: string;
   degree: string;
   year: string;
+  description?: string;
 }
 
 export interface Template {
@@ -57,4 +63,16 @@ export interface ChatMessage {
   role: 'user' | 'model';
   text: string;
   isStreaming?: boolean;
+}
+
+export interface ResumeScore {
+  overall: number;
+  breakdown: {
+    quality: number;
+    relevance: number;
+    skills: number;
+    clarity: number;
+    ats: number;
+  };
+  feedback: string[];
 }

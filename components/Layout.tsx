@@ -7,8 +7,7 @@ import {
   LogOut, 
   Menu, 
   X, 
-  PlusCircle, 
-  Sparkles 
+  PlusCircle
 } from 'lucide-react';
 import { useAuth } from '../App';
 import ChatBot from './ChatBot';
