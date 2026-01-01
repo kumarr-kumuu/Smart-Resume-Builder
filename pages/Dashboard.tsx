@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, FileText, Download, Trash2, Edit, Clock, CheckCircle, Loader2, AlertCircle, XCircle } from 'lucide-react';
+import { Search, Plus, FileText, Download, Trash2, Edit, Clock, CheckCircle, Loader2, AlertCircle, Sparkles, Play } from 'lucide-react';
 import { Resume } from '../types';
 import { fetchResumes, deleteResume } from '../services/resumeService';
 
@@ -38,24 +38,22 @@ const Dashboard: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to permanently delete this resume? This action cannot be undone.')) {
-      return;
-    }
+    if (!window.confirm('Delete this masterpiece? This cannot be undone.')) return;
 
     setDeletingId(id);
     try {
       await deleteResume(id);
       setResumes(prev => prev.filter(r => (r.id !== id && (r as any)._id !== id)));
-      showToast('Resume deleted successfully', 'success');
+      showToast('Masterpiece removed.', 'success');
     } catch (err: any) {
-      showToast(err.message || 'Failed to delete resume', 'error');
+      showToast(err.message || 'Deletion failed.', 'error');
     } finally {
       setDeletingId(null);
     }
   };
 
   const filteredResumes = resumes.filter(r => {
-    const title = r.title || 'Untitled Resume';
+    const title = r.title || 'Untitled';
     const matchesSearch = title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesTab = activeTab === 'all' 
       || (activeTab === 'published' && r.status === 'final')
@@ -63,182 +61,140 @@ const Dashboard: React.FC = () => {
     return matchesSearch && matchesTab;
   });
 
-  const publishedCount = resumes.filter(r => r.status === 'final').length;
-  const draftCount = resumes.filter(r => r.status === 'draft').length;
-
   return (
-    <div className="p-6 max-w-7xl mx-auto animate-fade-in relative">
+    <div className="p-8 md:p-12 animate-fade-in relative transition-colors duration-500">
       {/* Toast Notification */}
       {toast && (
-        <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-[100] px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 animate-fade-in-up border ${
-          toast.type === 'success' ? 'bg-green-600 border-green-500 text-white' : 'bg-red-600 border-red-500 text-white'
+        <div className={`fixed top-8 left-1/2 -translate-x-1/2 z-[200] px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4 animate-fade-in-up border ${
+          toast.type === 'success' ? 'bg-brand-red border-red-500 text-white' : 'bg-red-950 border-red-800 text-red-200'
         }`}>
-          {toast.type === 'success' ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
-          <span className="font-bold text-sm tracking-wide uppercase">{toast.message}</span>
+          {toast.type === 'success' ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
+          <span className="font-black text-xs uppercase tracking-widest">{toast.message}</span>
         </div>
       )}
 
-      {/* Quick Actions */}
-      <div className="mb-10">
-        <div 
-          onClick={() => navigate('/templates')}
-          className="group cursor-pointer p-8 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl shadow-xl hover:shadow-blue-200 transition-all flex items-center justify-between text-white max-w-2xl"
-        >
-          <div>
-            <h2 className="text-2xl font-bold mb-2 font-heading">Create New Resume</h2>
-            <p className="text-blue-100">Pick a professional template and land your dream job.</p>
-          </div>
-          <Plus size={40} className="opacity-50 group-hover:opacity-100 transition-opacity" />
+      {/* Header Section */}
+      <header className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8">
+        <div>
+          <h1 className="text-5xl md:text-6xl font-black font-heading tracking-tighter mb-4 text-white uppercase">My Resumes</h1>
+          <p className="text-gray-500 text-sm font-medium uppercase tracking-[0.2em]">Manage your professional masterpieces</p>
         </div>
-      </div>
-
-      {/* Stats & Filters */}
-      <div className="flex flex-col lg:flex-row justify-between items-center mb-8 gap-6">
-        <div className="flex p-1 bg-white border border-gray-100 rounded-2xl shadow-sm w-full lg:w-auto overflow-x-auto scrollbar-hide">
-          <TabButton 
-            active={activeTab === 'all'} 
-            onClick={() => setActiveTab('all')} 
-            label="All" 
-            count={resumes.length} 
-          />
-          <TabButton 
-            active={activeTab === 'published'} 
-            onClick={() => setActiveTab('published')} 
-            label="Published" 
-            count={publishedCount} 
-          />
-          <TabButton 
-            active={activeTab === 'drafts'} 
-            onClick={() => setActiveTab('drafts')} 
-            label="Drafts" 
-            count={draftCount} 
-          />
-        </div>
-
-        <div className="relative w-full lg:w-96">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+        
+        <div className="relative group w-full md:w-96">
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-brand-red transition-colors" size={20} />
           <input 
             type="text" 
-            placeholder="Search resumes..." 
+            placeholder="Search catalog..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-white border border-gray-100 rounded-2xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all shadow-sm font-medium"
+            className="w-full pl-16 pr-6 py-5 bg-brand-surface border border-white/5 rounded-3xl focus:ring-2 focus:ring-brand-red/30 focus:border-brand-red outline-none transition-all shadow-2xl text-sm font-bold placeholder:text-gray-700 text-white"
           />
         </div>
+      </header>
+
+      {/* Tabs Switcher */}
+      <div className="flex bg-brand-surface p-1 rounded-2xl border border-white/5 mb-12 w-fit">
+        {(['all', 'published', 'drafts'] as const).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+              activeTab === tab ? 'bg-brand-red text-white shadow-lg' : 'text-gray-500 hover:text-white'
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
       </div>
 
-      {/* Resume Grid */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} className="bg-white rounded-3xl h-72 animate-pulse border border-gray-100"></div>
-          ))}
+      {/* Grid Section */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+        {/* Create Card */}
+        <div 
+          onClick={() => navigate('/templates')}
+          className="aspect-[4/5] bg-brand-surface border-2 border-dashed border-white/10 rounded-[2.5rem] flex flex-col items-center justify-center cursor-pointer group hover:border-brand-red/50 hover:bg-brand-red/5 transition-all relative overflow-hidden"
+        >
+          <div className="p-8 rounded-full bg-white/5 text-gray-500 group-hover:bg-brand-red group-hover:text-white transition-all shadow-2xl">
+            <Plus size={48} strokeWidth={3} />
+          </div>
+          <span className="mt-8 font-black text-xs uppercase tracking-widest text-gray-400 group-hover:text-white">Start New Entry</span>
+          
+          <Sparkles size={20} className="absolute top-8 right-8 text-brand-red/20 group-hover:text-brand-red transition-colors" />
         </div>
-      ) : filteredResumes.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {filteredResumes.map((resume) => {
-            const resumeId = (resume as any)._id || resume.id;
-            const isDeleting = deletingId === resumeId;
 
-            return (
-              <div key={resumeId} className="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col group relative">
-                {/* Status Badge */}
-                <div className="absolute top-4 left-4 z-10">
-                  {resume.status === 'draft' ? (
-                    <span className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 text-amber-700 text-[10px] font-black uppercase tracking-wider rounded-full border border-amber-100">
-                      <Clock size={12} /> Draft
+        {/* Resume Cards */}
+        {isLoading ? (
+          [1,2,3,4].map(i => (
+            <div key={i} className="aspect-[4/5] bg-brand-surface rounded-[2.5rem] animate-pulse border border-white/5"></div>
+          ))
+        ) : filteredResumes.map((resume) => {
+          const rId = (resume as any)._id || resume.id;
+          const isDeleting = deletingId === rId;
+
+          return (
+            <div key={rId} className="aspect-[4/5] bg-brand-surface rounded-[2.5rem] border border-white/5 group relative overflow-hidden shadow-2xl transition-all duration-500 hover:scale-[1.03] hover:border-white/20 red-glow">
+              <div className="h-[75%] bg-gradient-to-b from-transparent to-brand-black/80 relative flex items-center justify-center">
+                 <FileText size={80} className="text-white/5 group-hover:text-brand-red/20 transition-all duration-700" />
+                 
+                 {/* Requested Draft Badge Styling */}
+                 <div className="absolute top-8 left-8">
+                    {resume.status === 'draft' ? (
+                      <span className="px-3 py-1 bg-yellow-100 text-yellow-700 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm">
+                        Draft
+                      </span>
+                    ) : (
+                      <span className="px-3 py-1 bg-brand-red/10 text-brand-red border border-brand-red/20 text-[10px] font-black uppercase tracking-widest rounded-lg backdrop-blur-md">
+                        Published
+                      </span>
+                    )}
+                 </div>
+
+                 {/* Play/Edit Overlay */}
+                 <div className="absolute inset-0 bg-brand-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-8 backdrop-blur-[2px]">
+                    <button 
+                      onClick={() => navigate(`/editor/${rId}`)}
+                      className="w-16 h-16 rounded-full bg-brand-red text-white flex items-center justify-center shadow-2xl shadow-brand-red/50 hover:scale-110 active:scale-95 transition-all mb-4"
+                    >
+                      <Play fill="white" size={28} className="ml-1" />
+                    </button>
+                    <span className="font-black text-[10px] uppercase tracking-widest text-white">
+                      {resume.status === 'draft' ? 'Continue Editing' : 'View Masterpiece'}
                     </span>
-                  ) : (
-                    <span className="flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 text-[10px] font-black uppercase tracking-wider rounded-full border border-green-100">
-                      <CheckCircle size={12} /> Final
-                    </span>
-                  )}
-                </div>
+                 </div>
+              </div>
 
-                {/* Action Menu (Floating) */}
-                <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); handleDelete(resumeId); }} 
-                    disabled={isDeleting}
-                    className={`p-2 bg-white/90 backdrop-blur shadow-sm rounded-xl transition-colors ${isDeleting ? 'text-gray-300' : 'text-gray-400 hover:text-red-500'}`}
-                    title="Delete Resume"
-                  >
-                    {isDeleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
-                  </button>
+              {/* Info Area */}
+              <div className="p-8 flex flex-col justify-end">
+                <div className="flex justify-between items-start mb-2">
+                   <h3 className="font-black text-xl text-white truncate uppercase tracking-tighter w-4/5">{resume.title || 'Untitled'}</h3>
+                   <button 
+                    onClick={(e) => { e.stopPropagation(); handleDelete(rId); }}
+                    className="p-2 text-gray-600 hover:text-brand-red transition-colors"
+                   >
+                     <Trash2 size={16} />
+                   </button>
                 </div>
-
-                {/* Thumbnail Area */}
-                <div className="h-44 bg-gray-50 relative border-b border-gray-50 flex items-center justify-center overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/10 to-transparent group-hover:from-gray-900/20 transition-all"></div>
-                  <FileText size={64} className="text-gray-200 group-hover:text-blue-200 transition-colors" />
-                  
-                  <div className="absolute inset-x-0 bottom-4 flex justify-center translate-y-12 group-hover:translate-y-0 transition-transform duration-300">
-                     <button 
-                      onClick={() => navigate(`/editor/${resumeId}`)}
-                      className="bg-white text-gray-900 px-5 py-2.5 rounded-xl font-bold shadow-lg text-sm flex items-center gap-2 hover:bg-gray-50 active:scale-95"
-                     >
-                       <Edit size={14} /> {resume.status === 'draft' ? 'Continue' : 'Edit'}
-                     </button>
-                  </div>
-                </div>
-                
-                <div className="p-6 flex-1 flex flex-col">
-                  <h3 className="font-bold text-gray-900 truncate mb-1" title={resume.title}>
-                    {resume.title || 'Untitled Resume'}
-                  </h3>
-                  <p className="text-xs text-gray-400 flex items-center gap-1 mb-6">
-                    <Clock size={12} /> {new Date(resume.lastEdited).toLocaleDateString()}
-                  </p>
-                  
-                  <div className="mt-auto pt-4 border-t border-gray-50 flex items-center justify-between">
-                     <button 
-                      onClick={() => navigate(`/editor/${resumeId}`)}
-                      className={`text-xs font-bold uppercase tracking-wider transition-colors ${resume.status === 'draft' ? 'text-amber-600 hover:text-amber-700' : 'text-blue-600 hover:text-blue-700'}`}
-                     >
-                       Open Editor
-                     </button>
-                     <button className="text-gray-300 hover:text-gray-900 transition-colors">
-                       <Download size={18} />
-                     </button>
-                  </div>
+                <div className="flex items-center gap-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                  <Clock size={12} />
+                  <span>Edited {new Date(resume.lastEdited).toLocaleDateString()}</span>
                 </div>
               </div>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
-          <div className="w-16 h-16 bg-gray-50 text-gray-300 rounded-full flex items-center justify-center mx-auto mb-4">
-             <FileText size={32} />
-          </div>
-          <h3 className="text-xl font-bold text-gray-800 font-heading">No resumes yet</h3>
-          <p className="text-gray-500 mt-1">Start by picking a professional template.</p>
-          <button 
-            onClick={() => navigate('/templates')}
-            className="mt-6 inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100"
-          >
-            <Plus size={18} /> New Resume
-          </button>
+
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/5">
+                <div className="h-full bg-brand-red shadow-[0_0_10px_#e50914]" style={{ width: resume.status === 'final' ? '100%' : '45%' }}></div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {filteredResumes.length === 0 && !isLoading && (
+        <div className="mt-20 text-center py-20 border-2 border-dashed border-white/5 rounded-[3rem]">
+          <p className="text-gray-600 font-black uppercase tracking-widest text-sm">No entries found in this category.</p>
         </div>
       )}
     </div>
   );
 };
-
-// --- Sub-components ---
-
-const TabButton = ({ active, onClick, label, count }: { active: boolean, onClick: () => void, label: string, count: number }) => (
-  <button 
-    onClick={onClick}
-    className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex items-center gap-2 whitespace-nowrap ${
-      active ? 'bg-gray-900 text-white shadow-md' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
-    }`}
-  >
-    {label}
-    <span className={`px-2 py-0.5 rounded-lg text-[10px] ${active ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'}`}>
-      {count}
-    </span>
-  </button>
-);
 
 export default Dashboard;

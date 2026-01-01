@@ -1,33 +1,52 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Smart Resume Builder</title>
+    <title>SMART RESUME BUILDER</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@700;800;900&family=Sora:wght@400;600;800&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
+        darkMode: 'class',
         theme: {
           extend: {
             fontFamily: {
               sans: ['Inter', 'sans-serif'],
               heading: ['Poppins', 'sans-serif'],
+              display: ['Sora', 'sans-serif'],
             },
             colors: {
-              primary: {
-                50: '#f0f9ff',
-                100: '#e0f2fe',
-                500: '#0ea5e9',
-                600: '#0284c7',
-                700: '#0369a1',
-              },
-              accent: {
-                500: '#8b5cf6',
-                600: '#7c3aed',
+              brand: {
+                black: '#0b0b0b',
+                surface: '#1a1a1a',
+                red: '#e50914',
+                redHover: '#ff0f1a',
               }
+            },
+            keyframes: {
+              'fade-in': {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              'fade-in-up': {
+                '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              'scale-in': {
+                '0%': { opacity: '0', transform: 'scale(0.95)' },
+                '100%': { opacity: '1', transform: 'scale(1)' },
+              }
+            },
+            animation: {
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'fade-in': 'fade-in 0.5s ease-out forwards',
+              'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
+              'scale-in': 'scale-in 0.3s ease-out forwards',
             }
           }
         }
@@ -36,24 +55,23 @@
     <style>
       @media print {
         @page { margin: 0; size: auto; }
-        body { margin: 0; -webkit-print-color-adjust: exact; }
+        body { margin: 0; -webkit-print-color-adjust: exact; background: white !important; color: black !important; }
         .no-print { display: none !important; }
         .print-only { display: block !important; }
-        .resume-preview { 
-          box-shadow: none !important; 
-          margin: 0 !important; 
-          width: 100% !important; 
-          max-width: none !important;
-          min-height: 100vh; 
-        }
       }
-      .scrollbar-hide::-webkit-scrollbar {
-          display: none;
+      body {
+        background-color: #0b0b0b;
+        color: #f3f4f6;
+        scrollbar-width: thin;
+        scrollbar-color: #333 #0b0b0b;
       }
-      .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-      }
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: #0b0b0b; }
+      ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+      .glass { background: rgba(26, 26, 26, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+      .red-glow:hover { box-shadow: 0 0 25px rgba(229, 9, 20, 0.4); }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
   <script type="importmap">
 {
@@ -68,7 +86,7 @@
 }
 </script>
 </head>
-  <body class="bg-gray-50 text-gray-900 font-sans antialiased">
+  <body class="antialiased">
     <div id="root"></div>
   </body>
 </html>

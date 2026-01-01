@@ -27,6 +27,43 @@ export const fetchResumes = async (): Promise<Resume[]> => {
   }
 };
 
+export const saveResume = async (resume: Resume): Promise<Resume> => {
+  try {
+    const response = await fetch(`${API_URL}/save-draft`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(resume)
+    });
+    if (!response.ok) throw new Error('Failed to save resume');
+    return await response.json();
+  } catch (error) {
+    console.warn("Saving to mock database:", error);
+    const mockData = localStorage.getItem('mock_resumes_db');
+    const resumes = mockData ? JSON.parse(mockData) : [];
+    
+    // Use either _id (from backend) or id (internal)
+    const index = resumes.findIndex((r: any) => 
+      (r._id && r._id === resume.id) || 
+      (r.id && r.id === resume.id)
+    );
+    
+    let updatedResume = { ...resume, lastEdited: new Date().toISOString() };
+    
+    if (index !== -1) {
+      resumes[index] = updatedResume;
+    } else {
+      // For new resumes in mock mode
+      if (updatedResume.id === 'new') {
+        updatedResume.id = `mock-${Date.now()}`;
+      }
+      resumes.push(updatedResume);
+    }
+    
+    localStorage.setItem('mock_resumes_db', JSON.stringify(resumes));
+    return updatedResume;
+  }
+};
+
 export const deleteResume = async (id: string): Promise<void> => {
   try {
     const response = await fetch(`${API_URL}/${id}`, {

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
@@ -7,9 +8,13 @@ import {
   LogOut, 
   Menu, 
   X, 
-  PlusCircle
+  PlusCircle,
+  Moon,
+  Sun,
+  Sparkles,
+  Zap
 } from 'lucide-react';
-import { useAuth } from '../App';
+import { useAuth, useTheme } from '../App';
 import ChatBot from './ChatBot';
 
 interface LayoutProps {
@@ -18,6 +23,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -28,53 +34,57 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const navItems = [
-    { label: 'My Resumes', path: '/dashboard', icon: LayoutDashboard },
-    { label: 'Templates', path: '/templates', icon: FileText },
-    { label: 'Profile', path: '/profile', icon: User },
+    { label: 'MY RESUMES', path: '/dashboard', icon: LayoutDashboard },
+    { label: 'TEMPLATES', path: '/templates', icon: FileText },
+    { label: 'Settings', path: '/profile', icon: User },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
-      {/* Mobile Header */}
-      <div className="md:hidden bg-white border-b border-gray-200 p-4 flex justify-between items-center sticky top-0 z-30">
-        <div className="flex items-center gap-2">
-           <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-1.5 rounded-lg">
-              <FileText size={20} />
+    <div className="min-h-screen bg-brand-black flex flex-col md:flex-row transition-all duration-700 selection:bg-brand-red selection:text-white">
+      {/* Mobile Top Bar */}
+      <div className="md:hidden bg-brand-surface border-b border-white/5 p-4 flex justify-between items-center sticky top-0 z-[100] glass">
+        <div className="flex items-center gap-3">
+           <div className="bg-brand-red text-white p-2 rounded-lg shadow-lg shadow-brand-red/20">
+              <Zap size={20} fill="currentColor" />
             </div>
-            <span className="font-heading font-bold text-lg text-gray-800">Smart Resume</span>
+            <span className="font-heading font-black text-sm uppercase tracking-tighter">SMART RESUME BUILDER</span>
         </div>
-        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-gray-600">
-          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 text-white">
+          {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
       </div>
 
-      {/* Sidebar Navigation */}
+      {/* Sidebar */}
       <aside className={`
-        fixed inset-y-0 left-0 z-20 w-64 bg-white border-r border-gray-200 transform transition-transform duration-200 ease-in-out
+        fixed inset-y-0 left-0 z-[110] w-72 bg-brand-black border-r border-white/5 transform transition-transform duration-500 ease-in-out
         md:relative md:translate-x-0
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
-        <div className="p-6 h-full flex flex-col">
-          <div className="hidden md:flex items-center gap-2 mb-10">
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-2 rounded-lg">
-              <FileText size={24} />
+        <div className="p-8 h-full flex flex-col">
+          <div className="hidden md:flex items-center gap-4 mb-16">
+            <div className="bg-brand-red text-white p-3 rounded-2xl shadow-2xl shadow-brand-red/40 animate-pulse-slow">
+              <Zap size={24} fill="currentColor" />
             </div>
-            <span className="font-heading font-bold text-xl text-gray-800">Smart Resume</span>
+            <div className="flex flex-col">
+              <span className="font-heading font-black text-lg uppercase leading-none tracking-tighter">SMART RESUME</span>
+              <span className="font-heading font-light text-xs uppercase tracking-widest text-brand-red">BUILDER</span>
+            </div>
           </div>
 
-          <div className="mb-6">
+          <div className="mb-10">
             <Link 
               to="/templates" 
-              className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-xl shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all font-medium"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="group flex items-center justify-center gap-3 w-full bg-gradient-to-r from-brand-red to-pink-700 text-white py-4 px-6 rounded-2xl shadow-xl hover:shadow-brand-red/30 hover:scale-105 active:scale-95 transition-all font-black uppercase tracking-widest text-[10px]"
             >
-              <PlusCircle size={20} />
+              <PlusCircle size={18} />
               <span>Create New</span>
             </Link>
           </div>
 
-          <nav className="space-y-1 flex-1">
+          <nav className="space-y-3 flex-1">
             {navItems.map((item) => {
-              const isActive = location.pathname === item.path;
+              const isActive = location.pathname.startsWith(item.path);
               const Icon = item.icon;
               return (
                 <Link
@@ -82,34 +92,38 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   to={item.path}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`
-                    flex items-center gap-3 px-4 py-3 rounded-xl transition-colors
+                    flex items-center gap-4 px-6 py-4 rounded-2xl transition-all relative overflow-hidden group
                     ${isActive 
-                      ? 'bg-blue-50 text-blue-700 font-medium' 
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}
+                      ? 'bg-brand-surface text-white border border-white/10' 
+                      : 'text-gray-500 hover:text-white hover:bg-white/5'}
                   `}
                 >
-                  <Icon size={20} />
-                  <span>{item.label}</span>
+                  {isActive && <div className="absolute left-0 top-0 bottom-0 w-1 bg-brand-red shadow-[0_0_15px_rgba(229,9,20,1)]"></div>}
+                  <Icon size={20} className={`${isActive ? 'text-brand-red' : 'group-hover:text-brand-red'} transition-colors duration-300`} />
+                  <span className={`text-xs uppercase tracking-widest font-bold ${isActive ? 'opacity-100' : 'opacity-60'}`}>{item.label}</span>
                 </Link>
               );
             })}
           </nav>
 
-          <div className="pt-6 border-t border-gray-100">
-            <div className="flex items-center gap-3 px-4 py-3 mb-2">
-              <img 
-                src={user?.avatar || "https://picsum.photos/100/100"} 
-                alt="Profile" 
-                className="w-10 h-10 rounded-full border border-gray-200"
-              />
+          <div className="pt-8 border-t border-white/5 space-y-4">
+            <div className="flex items-center gap-4 px-4 py-4 bg-white/5 rounded-[2rem] border border-white/5 group transition-all hover:bg-white/10 cursor-pointer">
+              <div className="relative">
+                <img 
+                  src={user?.avatar || "https://picsum.photos/100/100"} 
+                  alt="Profile" 
+                  className="w-10 h-10 rounded-xl object-cover ring-2 ring-brand-red/20 group-hover:ring-brand-red transition-all"
+                />
+              </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">{user?.name}</p>
-                <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                <p className="text-[10px] font-black text-white truncate uppercase tracking-widest">{user?.name}</p>
+                <p className="text-[8px] font-bold text-gray-500 truncate uppercase tracking-tighter">{user?.email}</p>
               </div>
             </div>
+
             <button 
               onClick={handleLogout}
-              className="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 w-full rounded-xl transition-colors text-sm font-medium"
+              className="flex items-center gap-4 px-6 py-4 text-gray-500 hover:text-brand-red transition-all text-xs font-black uppercase tracking-widest"
             >
               <LogOut size={18} />
               <span>Sign Out</span>
@@ -119,8 +133,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto h-[calc(100vh-64px)] md:h-screen relative no-print">
-        {children}
+      <main className="flex-1 overflow-auto h-[calc(100vh-64px)] md:h-screen relative no-print bg-brand-black">
+        <div className="max-w-7xl mx-auto min-h-full">
+          {children}
+        </div>
         <ChatBot />
       </main>
     </div>

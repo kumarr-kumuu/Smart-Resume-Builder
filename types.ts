@@ -21,6 +21,7 @@ export interface Resume {
     phone: string;
     location: string;
     summary: string;
+    dob?: string;
     website?: string;
     linkedin?: string;
   };

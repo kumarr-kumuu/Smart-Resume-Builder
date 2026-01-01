@@ -15,6 +15,7 @@ const ATSOptimized: React.FC<TemplateProps> = ({ data }) => {
         <h1 className="text-2xl font-bold uppercase mb-1">{personalInfo.fullName || 'FULL NAME'}</h1>
         <p className="text-[10pt]">
           {personalInfo.location} | {personalInfo.phone} | {personalInfo.email}
+          {personalInfo.dob && ` | DOB: ${personalInfo.dob}`}
         </p>
         <p className="text-[10pt] italic">
           {personalInfo.linkedin && `LinkedIn: ${personalInfo.linkedin}`}

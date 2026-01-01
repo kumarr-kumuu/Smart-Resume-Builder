@@ -19,14 +19,49 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType>(null!);
-
 export const useAuth = () => useContext(AuthContext);
+
+// --- Theme Context ---
+interface ThemeContextType {
+  theme: 'light' | 'dark';
+  setTheme: (theme: 'light' | 'dark') => void;
+  toggleTheme: () => void;
+}
+
+const ThemeContext = createContext<ThemeContextType>(null!);
+export const useTheme = () => useContext(ThemeContext);
+
+const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [theme, setThemeState] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('smart_resume_theme');
+    if (saved === 'light' || saved === 'dark') return saved;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+    localStorage.setItem('smart_resume_theme', theme);
+  }, [theme]);
+
+  const setTheme = (t: 'light' | 'dark') => setThemeState(t);
+  const toggleTheme = () => setThemeState(prev => prev === 'light' ? 'dark' : 'light');
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
 
 const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Check local storage for persistence
     const storedUser = localStorage.getItem('smart_resume_user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
@@ -65,40 +100,41 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 // --- Main App Component ---
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <HashRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
-          
-          <Route path="/dashboard" element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/templates" element={
-            <ProtectedRoute>
-              <Templates />
-            </ProtectedRoute>
-          } />
-          
-          <Route path="/editor/:id" element={
-            <ProtectedRoute>
-              <Editor />
-            </ProtectedRoute>
-          } />
-          
-          {/* Support for nested routes in Profile */}
-          <Route path="/profile/*" element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          } />
-        </Routes>
-      </HashRouter>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <HashRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/templates" element={
+              <ProtectedRoute>
+                <Templates />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/editor/:id" element={
+              <ProtectedRoute>
+                <Editor />
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/profile/*" element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } />
+          </Routes>
+        </HashRouter>
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 

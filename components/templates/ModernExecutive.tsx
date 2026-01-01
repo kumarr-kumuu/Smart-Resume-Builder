@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Resume } from '../../types';
 
@@ -53,6 +54,7 @@ const ModernExecutive: React.FC<TemplateProps> = ({ data }) => {
               {personalInfo.email && <p className="break-all"><strong>E:</strong> {personalInfo.email}</p>}
               {personalInfo.phone && <p><strong>P:</strong> {personalInfo.phone}</p>}
               {personalInfo.location && <p><strong>L:</strong> {personalInfo.location}</p>}
+              {personalInfo.dob && <p><strong>DOB:</strong> {personalInfo.dob}</p>}
               {personalInfo.linkedin && <p className="text-blue-600 text-xs">LinkedIn</p>}
             </div>
           </section>
